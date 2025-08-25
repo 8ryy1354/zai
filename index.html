@@ -200,13 +200,17 @@ function openVideoModal(url) {
   player.src = "";
   modal.classList.remove("hidden");
 
-  if (Hls.isSupported() && url.endsWith(".m3u8")) {
+  // 用解析接口拼接地址
+  const parsedUrl = "https://slslplay.com/?url=" + encodeURIComponent(url);
+
+  // 播放逻辑
+  if (Hls.isSupported() && parsedUrl.endsWith(".m3u8")) {
     const hls = new Hls();
-    hls.loadSource(url);
+    hls.loadSource(parsedUrl);
     hls.attachMedia(player);
     window.currentHls = hls;
   } else {
-    player.src = url;
+    player.src = parsedUrl;
   }
 
   player.play().catch(err => console.warn("播放失败", err));
