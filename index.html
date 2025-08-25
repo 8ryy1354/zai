@@ -65,8 +65,9 @@
         <div class="bg-white p-4 rounded-lg shadow-lg w-full sm:max-w-lg md:max-w-xl lg:max-w-3xl relative">
             <button id="closeModal" class="absolute top-2 right-2 px-4 py-2 bg-red-600 text-white text-lg font-bold rounded-full z-50 hover:bg-red-700 transition">✖</button>
             <div class="relative w-full flex justify-center">
-                <video id="videoPlayer" class="w-full max-h-[80vh] object-contain rounded-lg" controls></video>
-            </div>
+  <!-- 删除原来的 <video> 标签 -->
+  <iframe id="videoFrame" class="w-full max-h-[80vh] rounded-lg" frameborder="0" allowfullscreen></iframe>
+</div>
         </div>
     </div>
 
@@ -194,53 +195,30 @@ function openVideoModal(url) {
   }
 
   const modal = document.getElementById("videoModal");
-  const player = document.getElementById("videoPlayer");
+  const frame = document.getElementById("videoFrame");
 
-  player.pause();
-  player.src = "";
   modal.classList.remove("hidden");
 
-  // 用解析接口拼接地址
+  // 拼接解析接口
   const parsedUrl = "https://slslplay.com/?url=" + encodeURIComponent(url);
 
-  // 播放逻辑
-  if (Hls.isSupported() && parsedUrl.endsWith(".m3u8")) {
-    const hls = new Hls();
-    hls.loadSource(parsedUrl);
-    hls.attachMedia(player);
-    window.currentHls = hls;
-  } else {
-    player.src = parsedUrl;
-  }
-
-  player.play().catch(err => console.warn("播放失败", err));
+  // 设置 iframe 播放
+  frame.src = parsedUrl;
 }
+
 
 function closeVideoModal() {
   const modal = document.getElementById("videoModal");
-  const player = document.getElementById("videoPlayer");
+  const frame = document.getElementById("videoFrame");
 
-  // 暂停视频播放
-  player.pause();
-  player.src = "";
-
-  // 释放 hls 对象（如果有）
-  if (window.currentHls) {
-    window.currentHls.destroy();
-    window.currentHls = null;
-  }
-
+  frame.src = ""; // 清空iframe
   modal.classList.add("hidden");
 }
 
+document.getElementById("closeModal").onclick = () => {
+  closeVideoModal();
+};
 
-
-    document.getElementById("closeModal").onclick = () => {
-      document.getElementById("videoModal").classList.add("hidden");
-      const player = document.getElementById("videoPlayer");
-      player.pause();
-      player.src = "";
-    };
 
     document.getElementById("prevPage").onclick = () => {
       if (currentPage > 1) {
